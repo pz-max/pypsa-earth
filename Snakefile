@@ -32,11 +32,9 @@ configfile: "configs/bundle_config.yaml"
 config["countries"] = create_country_list(config["countries"])
 
 # create a list of iteration steps, required to solve the experimental design
-# each value is used as wildcard input e.g. solution_{unc} 
+# each value is used as wildcard input e.g. solution_{unc}
 if config["monte_carlo"].get("add_to_snakefile", False) == True:
-    config["scenario"]["unc"] = wildcard_creator(
-        config, config["monte_carlo"]["options"].get("method")
-    )
+    config["scenario"]["unc"] = wildcard_creator(config)
 
 run = config.get("run", {})
 RDIR = run["name"] + "/" if run.get("name") else ""
@@ -657,7 +655,6 @@ if config["monte_carlo"].get("add_to_snakefile", False) == True:
         script:
             "scripts/monte_carlo.py"
 
-
     rule solve_network:
         input:
             "networks/" + RDIR + "elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_{unc}.nc",
@@ -692,7 +689,6 @@ if config["monte_carlo"].get("add_to_snakefile", False) == True:
         script:
             "scripts/solve_network.py"
 
-
     rule solve_all_networks_monte:
         input:
             expand(
@@ -701,7 +697,6 @@ if config["monte_carlo"].get("add_to_snakefile", False) == True:
                 + "networks/elec_s{simpl}_{clusters}_ec_l{ll}_{opts}_{unc}.nc",
                 **config["scenario"]
             ),
-
 
 else:
 
